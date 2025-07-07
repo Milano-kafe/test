@@ -3,12 +3,11 @@
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Star, Plus, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { useLanguage } from "@/contexts/language-context"
-import { useCart } from "@/contexts/cart-context"
+import { MenuItemCard } from "@/components/menu-item-card"
 
 interface MenuItem {
   id: number
@@ -20,9 +19,8 @@ interface MenuItem {
   description_en: string
   price: number
   image_url: string
-  category_name_uz: string
-  category_name_ru: string
-  category_name_en: string
+  rating?: number
+  reviews_count?: number
 }
 
 interface Category {
@@ -34,7 +32,6 @@ interface Category {
 
 export default function MenuPage() {
   const { language, t } = useLanguage()
-  const { addToCart } = useCart()
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
@@ -159,50 +156,7 @@ export default function MenuPage() {
         {/* Menu Items Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredItems.map((item) => (
-            <Card
-              key={item.id}
-              className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-            >
-              <CardContent className="p-0">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <img
-                    src={item.image_url || "/placeholder.svg?height=200&width=300"}
-                    alt={getLocalizedText(item, "name")}
-                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-semibold">4.8</span>
-                  </div>
-                </div>
-
-                <div className="p-4">
-                  <div className="mb-3">
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{getLocalizedText(item, "name")}</h3>
-                    <p className="text-gray-600 text-sm line-clamp-2">{getLocalizedText(item, "description")})</p>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="text-xl font-bold text-orange-600">{formatPrice(item.price)}</div>
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        addToCart({
-                          id: item.id,
-                          name: getLocalizedText(item, "name"),
-                          price: item.price,
-                          image_url: item.image_url,
-                        })
-                      }
-                      className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-full px-3 py-1 transition-all duration-300 hover:shadow-lg"
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      {t("addToCart")}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <MenuItemCard key={item.id} item={item} />
           ))}
         </div>
 

@@ -1,11 +1,17 @@
 // lib/db.ts
 import { neon } from "@neondatabase/serverless"
 
-// Doimiy ravishda haqiqiy ma'lumotlar bazasiga ulanish
-export const sql = neon(process.env.DATABASE_URL!)
+// Ma'lumotlar bazasiga ulanish
+export const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null
+export const hasDb = !!process.env.DATABASE_URL
 
-// Bazaga ulanishni tekshirish uchun funksiya
+// Database connection test
 export async function testConnection() {
+  if (!hasDb || !sql) {
+    console.log("⚠️ No database configured, using demo mode")
+    return false
+  }
+  
   try {
     await sql`SELECT 1 as test`
     console.log("✅ Database connection successful")
